@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <!-- 页面meta -->
+
+    <meta charset="utf-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>员工加班信息管理</title>
+
+    <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+
+    <!-- 引入样式 -->
+
+    <link rel="stylesheet" href="../../plugin/elementui/index.css">
+
+    <link rel="stylesheet" href="../../plugin/font-awesome/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="../../css/style.css">
+
+</head>
+
+<body class="hold-transition">
+
+<div id="app">
+
+    <div class="content-header">
+
+        <h1>员工加班信息管理</h1>
+
+    </div>
+
+    <div class="app-container">
+
+        <div class="box">
+
+            <div class="filter-container">
+                <el-date-picker
+                        v-model="actDate"
+                        value-format="yyyy-MM-dd hh:mm:ss"
+                        type="daterange"
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        align="center"
+                ></el-date-picker>
+
+                <el-button @click="getAll()" class="dalfBut">查询</el-button>
+
+                <el-button type="primary" class="butT" @click="handleCreate()">新建</el-button>
+
+            </div>
+
+            <el-table size="small" current-row-key="id" :data="dataList" stripe highlight-current-row>
+
+                <el-table-column type="index" align="center" label="序号"></el-table-column>
+
+                <el-table-column prop="emp_id" label="员工编号" align="center"></el-table-column>
+
+                <el-table-column prop="name" label="员工姓名" align="center"></el-table-column>
+
+                <el-table-column prop="age" label="年龄" align="center"></el-table-column>
+
+                <el-table-column prop="gender" label="性别" align="center"></el-table-column>
+
+                <el-table-column prop="tel_num" label="电话号码" align="center"></el-table-column>
+
+                <el-table-column prop="type" label="加班类型" align="center"></el-table-column>
+
+                <el-table-column prop="begin" label="起始时间" align="center"></el-table-column>
+
+                <el-table-column prop="end" label="结束时间" align="center"></el-table-column>
+
+                <el-table-column label="操作" align="center">
+
+                    <template slot-scope="scope">
+
+                        <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
+
+                        <el-button type="danger" size="mini" @click="handleDelete(scope.row)">删除</el-button>
+
+                    </template>
+
+                </el-table-column>
+
+            </el-table>
+            <!-- 分页器 -->
+            <div class="block" style="margin-top:15px;">
+                <el-pagination align='center' @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                               :current-page.sync="page"
+                               :page-sizes="[1,2,3,5]"
+                               :page-size="limit"
+                               layout="total, sizes, prev, pager, next"
+                               :total="total">
+                </el-pagination>
+            </div>
+
+            <!-- 新增标签弹层 -->
+
+            <div class="add-form">
+
+                <el-dialog title="添加加班" :visible.sync="dialogFormVisible">
+
+                    <el-form ref="dataAddForm" :model="formData" :rules="rules" label-position="right" label-width="100px">
+
+                        <el-row>
+
+                            <el-col :span="12">
+
+                                <el-form-item label="员工编号" prop="emp_id">
+
+                                    <el-input v-model="formData.emp_id"/>
+
+                                </el-form-item>
+
+                            </el-col>
+
+
+                        </el-row>
+
+
+                        <el-row>
+
+                            <el-col :span="24" prop="tel_num">
+
+                                <el-form-item label="手机号">
+
+                                    <el-input v-model="formData.tel_num"   placeholder="手机号"  type="text"  maxlength="11"></el-input>
+
+                                </el-form-item>
+
+                            </el-col>
+
+                        </el-row>
+
+                        <el-row>
+
+                            <el-col :span="24" prop="type">
+                                <el-form-item label="加班类型">
+                                    <el-radio v-model="formData.type" label="法定加班">法定加班</el-radio>
+                                    <el-radio v-model="formData.type" label="带薪加班">带薪加班</el-radio>
+                                    <el-radio v-model="formData.type" label="自愿加班">自愿加班</el-radio>
+                                </el-form-item>
+                            </el-col>
+
+                        </el-row>
+
+                        <el-date-picker
+                                v-model="formData.begin"
+                                value-format="yyyy-MM-dd hh:mm:ss"
+                                type="date"
+                                label="起始时间"
+                        ></el-date-picker>
+
+                        <el-date-picker
+                                v-model="formData.end"
+                                value-format="yyyy-MM-dd hh:mm:ss"
+                                type="date"
+                                label="结束时间"
+                        ></el-date-picker>
+
+                    </el-form>
+
+                    <div slot="footer" class="dialog-footer">
+
+                        <el-button @click="dialogFormVisible = false">取消</el-button>
+
+                        <el-button type="primary" @click="handleAdd()">确定</el-button>
+
+                    </div>
+
+                </el-dialog>
+
+            </div>
+
+            <!-- 编辑标签弹层 -->
+
+            <div class="add-form">
+
+                <el-dialog title="编辑检查项" :visible.sync="dialogFormVisible4Edit">
+
+                    <el-form ref="dataEditForm" :model="formData" :rules="rules" label-position="right" label-width="100px">
+                        <el-row>
+
+                            <el-col :span="24" prop="type">
+
+                                <el-radio v-model="formData.type" label="法定加班">法定加班</el-radio>
+                                <el-radio v-model="formData.type" label="带薪加班">带薪加班</el-radio>
+                                <el-radio v-model="formData.type" label="自愿加班">自愿加班</el-radio>
+
+                            </el-col>
+
+                        </el-row>
+
+                        <el-date-picker
+                                v-model="formData.begin"
+                                value-format="yyyy-MM-dd hh:mm:ss"
+                                type="date"
+                        ></el-date-picker>
+
+                        <el-date-picker
+                                v-model="formData.end"
+                                value-format="yyyy-MM-dd hh:mm:ss"
+                                type="date"
+                        ></el-date-picker>
+
+                    </el-form>
+
+                    <div slot="footer" class="dialog-footer">
+
+                        <el-button @click="dialogFormVisible4Edit = false">取消</el-button>
+
+                        <el-button type="primary" @click="handleEdit()">确定</el-button>
+
+                    </div>
+
+                </el-dialog>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+<!-- 引入组件库 -->
+
+<script src="../../js/vue.js"></script>
+
+<script src="../../plugin/elementui/index.js"></script>
+
+<script type="text/javascript" src="../../js/jquery.min.js"></script>
+
+<script src="../../js/axios-0.18.0.js"></script>
+
+<script>
+    var vue = new Vue({
+
+        el: '#app',
+        data:{
+            actDate:[],
+            page:1,
+            limit:3,
+            pages:0,
+            total:0,
+            pagination: {},
+            dataList: [],//当前页要展示的列表数据
+            formData: {},//表单数据
+            dialogFormVisible: false,//控制表单是否可见
+            dialogFormVisible4Edit:false,//编辑表单是否可见
+        },
+
+        //钩子函数，VUE对象初始化完成后自动执行
+        created() {
+            this.getAll();
+        },
+
+        methods: {
+            //列表
+            getAll() {
+                //发送ajax请求
+                axios({
+                    url:`/add_job/nested/${this.page}/${this.limit}`,
+                    method:'get',
+                    params:{
+                        begin:this.actDate[0],
+                        end:this.actDate[1]
+                    }
+                }).then((res)=>{
+                    this.dataList = res.data.data.pageList;
+                    this.page = res.data.data.currentPage
+                    this.total = res.data.data.total
+                    this.pages = res.data.data.pages
+                    this.limit = res.data.data.limit
+                });
+            },
+            //每页条数改变时触发 选择一页显示多少行
+            handleSizeChange(val) {
+                console.log(`每页 ${val} 条`);
+                this.page = 1;
+                this.limit = val;
+                this.getAll()
+            },
+            //当前页改变时触发 跳转其他页
+            handleCurrentChange(val) {
+                console.log(`当前页: ${val}`);
+                this.page = val;
+                this.getAll()
+            },
+
+
+            //弹出添加窗口
+            handleCreate() {
+                this.dialogFormVisible = true;
+                this.resetForm();
+            },
+
+            //重置表单
+            resetForm() {
+                this.formData = {};
+            },
+
+            //添加
+            handleAdd () {
+                //发送ajax请求
+                axios.post("/add_job",this.formData).then((res)=>{
+                    console.log(res.data);
+                    //如果操作成功，关闭弹层，显示数据
+                    if(res.data.code == 20011){
+                        this.dialogFormVisible = false;
+                        this.$message.success("添加成功");
+                    }else if(res.data.code == 20010){
+                        this.$message.error("添加失败");
+                    }else{
+                        this.$message.error(res.data.msg);
+                    }
+                }).finally(()=>{
+                    this.name = ''
+                    this.getAll();
+                });
+            },
+
+            //弹出编辑窗口
+            handleUpdate(row) {
+                // console.log(row);   //row.id 查询条件
+                //查询数据，根据id查询
+                axios.get("/add_job/"+row.id).then((res)=>{
+                    // console.log(res.data.data);
+                    if(res.data.code == 20041){
+                        //展示弹层，加载数据
+                        this.formData = res.data.data;
+                        this.dialogFormVisible4Edit = true;
+                    }else{
+                        this.$message.error(res.data.msg);
+                    }
+                });
+            },
+
+            //编辑
+            handleEdit() {
+                //发送ajax请求
+                axios.put("/add_job",this.formData).then((res)=>{
+                    //如果操作成功，关闭弹层，显示数据
+                    if(res.data.code == 20031){
+                        this.dialogFormVisible4Edit = false;
+                        this.$message.success("修改成功");
+                    }else if(res.data.code == 20030){
+                        this.$message.error("修改失败");
+                    }else{
+                        this.$message.error(res.data.msg);
+                    }
+                }).finally(()=>{
+                    this.actDate = [],
+                    this.getAll();
+                });
+            },
+
+            // 删除
+            handleDelete(row) {
+                //1.弹出提示框
+                this.$confirm("此操作永久删除当前数据，是否继续？","提示",{
+                    type:'info'
+                }).then(()=>{
+                    //2.做删除业务
+                    axios.delete("/add_job/"+row.id).then((res)=>{
+                        if(res.data.code == 20021){
+                            this.$message.success("删除成功");
+                        }else{
+                            this.$message.error("删除失败");
+                        }
+                    }).finally(()=>{
+                        this.getAll();
+                    });
+                }).catch(()=>{
+                    //3.取消删除
+                    this.$message.info("取消删除操作");
+                });
+            }
+        }
+    })
+
+</script>
+
+</html>

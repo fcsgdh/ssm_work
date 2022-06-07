@@ -1,0 +1,26 @@
+package org.ali.service;
+
+import org.ali.entity.AddJobRecord;
+import org.ali.entity.PageParam;
+import org.ali.entity.vo.EmpJobAddVo;
+
+import java.util.Date;
+import java.util.List;
+
+public interface AddJobRecordService {
+
+    PageParam<AddJobRecord> listByPage(int currentPage, int limit);
+    boolean save(AddJobRecord addJobRecord);
+    List<AddJobRecord> findById(int eid);
+    PageParam<EmpJobAddVo> listNestedByPage(int currentPage,int limit,Date begin,Date end);
+
+    // 删除一条加班记录
+    int delete(Integer id);
+
+    // 修改一条记录
+    int update(AddJobRecord addJobRecord);
+
+    AddJobRecord findOne(int id);
+
+    List<Integer> findIdsByEmpId(int emp_id);
+}

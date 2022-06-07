@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: rgb(101, 98, 98);
+        }
+
+        .bigbox {
+            width: 400px;
+            height: 353px;
+            background-color: #ffffff;
+            border-radius: 15px;
+            border: 1px solid #fff;
+            margin: 0 auto;
+            margin-top: 174px;
+            /* text-align: center; */
+        }
+
+        span {
+            display: block;
+            left: 49px;
+            top: 51px;
+            width: 253px;
+            height: 20px;
+            font-family: MuseoSlab-500;
+            font-size: 21px;
+            font-weight: normal;
+            font-stretch: normal;
+            line-height: 2px;
+            letter-spacing: 3px;
+            color: #474646;
+            margin-left: 47px;
+            margin-top: 51px;
+        }
+
+        .login {
+            position: absolute;
+            margin-left: 47px;
+        }
+        .login img{
+            height: 38px;
+            width: 38px;
+            border-left: 0.1px solid   rgba(102, 99, 99,0.3);;
+        }
+        .one{
+            position: relative;
+            top: -40px;
+            left: 264px;
+        }
+        .two{
+            position: relative;
+            top: -55px;
+            left: 264px;
+        }
+        
+       .login input {
+            display: block;
+            width: 301px;
+            height: 38px;
+            background-image: linear-gradient(#ffffff,
+                    #ffffff),
+                linear-gradient(#f4f4f4,
+                    #f4f4f4);
+            background-blend-mode: normal,
+                normal;
+            border: solid 1px #dddddd;
+            margin-bottom: 1px;
+        }
+        input[type='password']{
+            margin-bottom: 16px;
+            margin-top: -10px;
+        }
+        input::-webkit-input-placeholder{   
+           color: rgba(102, 99, 99,0.5);
+        }
+        button {
+            width: 301px;
+            height: 38px;
+            margin-left: -42px;
+            background-image: linear-gradient(#79b42b,
+                    #79b42b),
+                linear-gradient(#f4f4f4,
+                    #f4f4f4);
+            background-blend-mode: normal,
+                normal;
+            border: solid 1px #79b42b;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bigbox">
+        <span>登录你的账户</span>
+        <form action="/admin/login" method="post">
+            <div class="login">
+                <label>
+                    <input type="text" placeholder="User Name" name="username"/>
+                </label>
+                <img src="./image/usrname.png" class="one" alt="">
+
+                <label>
+                    <input type="password" placeholder="Password" name="password"/>
+                </label>
+                <img src="./image/password.png" class="two" alt="">
+                <button type="submit">登录</button>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>
